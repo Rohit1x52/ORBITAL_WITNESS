@@ -1,0 +1,9 @@
+streamlit
+numpy
+opencv-python-headless
+python-dotenv
+requests
+langchain
+langchain-groq
+langchain-community  
+faiss-cpu
