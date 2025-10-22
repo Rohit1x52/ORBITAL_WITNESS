@@ -1,28 +1,45 @@
 import streamlit as st
-import numpy as np
-from PIL import Image
-from app.nasa_api import fetch_imagery
-from app.agent import image_analysis_agent
-from Interface.visualizer import display_image
 
-st.set_page_config(page_title="🛰️ Satellite Vision Agent", layout="centered")
-st.title("🌍 Satellite Image Analysis Agent")
+# This is the ONLY import you need from the 'app' package
+from app.agent import create_satellite_agent
+from Interface import visualizer
 
-location = st.text_input("Enter a location:", placeholder="e.g., Mumbai, India")
+def main():
+    st.set_page_config(page_title="GeoGuardian AI", layout="wide")
+    st.title("🛰️ GeoGuardian: Satellite Image Analyzer (LCEL+RAG)")
+    st.markdown("An AI agent to detect and analyze changes from satellite imagery.")
+    
+    # Initialize the agent chain
+    if 'agent_chain' not in st.session_state:
+        with st.spinner("Initializing AI Agent and Knowledge Base..."):
+            st.session_state.agent_chain = create_satellite_agent()
 
-if location:
-    with st.spinner("Fetching satellite image..."):
+    with st.sidebar:
+        st.header("Analysis Parameters")
+        location_str = st.text_input("Location (Lat, Lon)", "40.7128, -74.0060")
+        before_date = st.date_input("Before Date")
+        after_date = st.date_input("After Date")
+        
+        analyze_button = st.button("Analyze Changes", type="primary")
+
+    if analyze_button:
         try:
-            image_array = fetch_imagery(location)
-            st.success("Image fetched successfully!")
-
-            # Display image
-            display_image(image_array)
-
-            # Run Agent
-            with st.spinner("Analyzing image with Vision Agent..."):
-                result = image_analysis_agent.invoke(image_array)
-                st.subheader("📝 Report")
-                st.write(result)
+            lat, lon = map(float, location_str.split(','))
+            
+            input_data = {
+                "location": (lat, lon),
+                "before_date": str(before_date),
+                "after_date": str(after_date)
+            }
+            
+            with st.spinner('Agent is analyzing the area... This may take a moment.'):
+                report = st.session_state.agent_chain.invoke(input_data)
+                
+            visualizer.display_results(report)
+            
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
+
