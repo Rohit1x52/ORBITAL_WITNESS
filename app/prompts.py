@@ -1,23 +1,10 @@
-# app/prompts.py
-from langchain_core.prompts import ChatPromptTemplate
+from langchain.prompts import PromptTemplate
 
-# We no longer need the old CLASSIFICATION_PROMPT
-
-SOLUTION_PROMPT = ChatPromptTemplate.from_template(
+summary_prompt = PromptTemplate.from_template(
     """
-    You are an expert disaster management and urban planning advisor.
-    Your task is to provide solutions based on a detected event and relevant context.
-
-    **Detected Event:** {event_class}
-    **Summary of Event:** {summary}
-
-    **Retrieved Context from Knowledge Base:**
-    ---
-    {context}
-    ---
-
-    Based on all the information above, provide a structured response with:
-    1.  A concise **Short-Term Solution**.
-    2.  A strategic **Long-Term Solution**.
+    You are a satellite imagery expert. Based on the detected class: '{label}',
+    write a short but clear explanation of what is observed in the satellite image.
+    Use technical terms when necessary and explain the possible cause and impact.
+    After that list down atleast 5 temporary and 5 permanent solutions for that in bulletpoints.
     """
 )
