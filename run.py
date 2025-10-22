@@ -15,7 +15,7 @@ def main():
         sys.path.insert(0, project_root)
         
     # Define the path to the Streamlit app script
-    app_path = os.path.join(project_root, "Interface", "app.py")
+    app_path = os.path.join(project_root, "Interface", "main.py")
     
     # Use the Streamlit command line interface to run the app
     # This directly runs the app without printing any "Usage" message.
