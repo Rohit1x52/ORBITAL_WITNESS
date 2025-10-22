@@ -1,6 +1,19 @@
-# Interface/app.py
 import streamlit as st
-# --- CHANGE: Import the create_agent function ---
+import sys
+import os
+
+# --- START: NEW PATH-FIXING CODE ---
+# This code ensures the app folder is always found
+# Get the absolute path of the directory this file (app.py) is in
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+# Get the path of the parent directory (your project root: ORBITAL_WITNESS)
+project_root = os.path.dirname(current_file_dir)
+# Add the project root to the system's import path
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+# --- END: NEW PATH-FIXING CODE ---
+
+# Now, this import should work correctly
 from app.agent import create_satellite_agent
 from Interface import visualizer
 
@@ -9,7 +22,7 @@ def main():
     st.title("🛰️ GeoGuardian: Satellite Image Analyzer (LCEL+RAG)") # Updated title
     st.markdown("An AI agent to detect and analyze changes from satellite imagery.")
     
-    # --- CHANGE: Initialize the agent chain ---
+    # Initialize the agent chain
     if 'agent_chain' not in st.session_state:
         with st.spinner("Initializing AI Agent and Knowledge Base..."):
             st.session_state.agent_chain = create_satellite_agent()
@@ -26,7 +39,6 @@ def main():
         try:
             lat, lon = map(float, location_str.split(','))
             
-            # --- CHANGE: Prepare input and invoke the chain ---
             input_data = {
                 "location": (lat, lon),
                 "before_date": str(before_date),
