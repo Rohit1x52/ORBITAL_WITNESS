@@ -276,10 +276,10 @@ class StringPromptTemplate(BasePromptTemplate, ABC):
 
     @classmethod
     def get_lc_namespace(cls) -> list[str]:
-        """Get the namespace of the langchain object.
+        """Get the namespace of the LangChain object.
 
         Returns:
-            ``["langchain", "prompts", "base"]``
+            `["langchain", "prompts", "base"]`
         """
         return ["langchain", "prompts", "base"]
 
@@ -287,7 +287,7 @@ class StringPromptTemplate(BasePromptTemplate, ABC):
         """Format the prompt with the inputs.
 
         Args:
-            kwargs: Any arguments to be passed to the prompt template.
+            **kwargs: Any arguments to be passed to the prompt template.
 
         Returns:
             A formatted string.
@@ -298,7 +298,7 @@ class StringPromptTemplate(BasePromptTemplate, ABC):
         """Async format the prompt with the inputs.
 
         Args:
-            kwargs: Any arguments to be passed to the prompt template.
+            **kwargs: Any arguments to be passed to the prompt template.
 
         Returns:
             A formatted string.

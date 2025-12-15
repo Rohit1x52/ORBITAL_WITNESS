@@ -3,9 +3,10 @@ from langchain_groq import ChatGroq
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
-from langchain.schema.output_parser import StrOutputParser
+from langchain_text_splitters import CharacterTextSplitter
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
+
 
 # --- Imports from our project ---
 from .nasa_api import fetch_imagery

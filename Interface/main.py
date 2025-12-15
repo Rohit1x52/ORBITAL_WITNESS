@@ -1,6 +1,4 @@
 import streamlit as st
-
-# This is the ONLY import you need from the 'app' package
 from app.agent import create_satellite_agent
 from Interface import visualizer
 
