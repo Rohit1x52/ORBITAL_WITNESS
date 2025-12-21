@@ -82,7 +82,7 @@ An intelligent satellite imagery analysis system powered by AI agents, LangChain
 
 ---
 
-## 🔧 Technology Stack
+##  Technology Stack
 
 ### Core Technologies
 
