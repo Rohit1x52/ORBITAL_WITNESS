@@ -9,25 +9,7 @@ An intelligent satellite imagery analysis system powered by AI agents, LangChain
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Features](#-features)
-- [System Architecture](#-system-architecture)
-- [Technology Stack](#-technology-stack)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Usage](#-usage)
-- [Project Structure](#-project-structure)
-- [Workflow Diagram](#-workflow-diagram)
-- [Components Deep Dive](#-components-deep-dive)
-- [Example Use Cases](#-example-use-cases)
-- [Contributing](#-contributing)
-- [License](#-license)
-
----
-
-## 🌟 Overview
+##  Overview
 
 **Orbital Witness** is an advanced satellite imagery analysis platform that leverages cutting-edge AI technologies to detect environmental changes and provide actionable solutions. The system combines computer vision, natural language processing, and a knowledge base to identify events like deforestation, floods, wildfires, urban development, and more.
 
@@ -40,9 +22,9 @@ An intelligent satellite imagery analysis system powered by AI agents, LangChain
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🔍 Core Features
+###  Core Features
 
 - **NASA API Integration**: Fetches real Landsat 8 satellite imagery
 - **Computer Vision Processing**: Advanced image differencing and change detection
@@ -51,21 +33,21 @@ An intelligent satellite imagery analysis system powered by AI agents, LangChain
 - **Multi-Event Classification**: Detects 7+ different event types
 - **Confidence Scoring**: Provides uncertainty metrics for human-in-the-loop review
 
-### 🎯 Supported Event Types
+###  Supported Event Types
 
 | Event Type | Description |
 |------------|-------------|
-| 🌲 Deforestation | Illegal logging, forest clearing |
-| 🌊 Flood | Natural flooding, storm surges |
-| 🔥 Wildfire | Forest fires, grassland fires |
-| 🏙️ Urban Development | New construction, infrastructure expansion |
-| 🌋 Volcanic Eruption | Volcanic activity and ash clouds |
-| 💣 Bombardment | Conflict-related structural damage |
-| ✅ Normal | No significant changes detected |
+|  Deforestation | Illegal logging, forest clearing |
+|  Flood | Natural flooding, storm surges |
+|  Wildfire | Forest fires, grassland fires |
+|  Urban Development | New construction, infrastructure expansion |
+|  Volcanic Eruption | Volcanic activity and ash clouds |
+|  Bombardment | Conflict-related structural damage |
+|  Normal | No significant changes detected |
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -126,60 +108,14 @@ An intelligent satellite imagery analysis system powered by AI agents, LangChain
 
 ---
 
-## 📦 Installation
-
-### Prerequisites
-
-- Python 3.8 or higher
-- pip package manager
-- NASA API Key ([Get one here](https://api.nasa.gov))
-- Groq API Key ([Get one here](https://console.groq.com))
-
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/ORBITAL_WITNESS.git
-cd ORBITAL_WITNESS
-```
-
-### Step 2: Create Virtual Environment
-
-```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# On Windows:
-.venv\Scripts\activate
-# On macOS/Linux:
-source .venv/bin/activate
-```
-
-### Step 3: Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4: Set Up Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-NASA_API_KEY=your_nasa_api_key_here
-GROQ_API_KEY=your_groq_api_key_here
-```
-
----
-
-## ⚙️ Configuration
+##  Configuration
 
 ### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `NASA_API_KEY` | ✅ Yes | NASA API key for satellite imagery |
-| `GROQ_API_KEY` | ✅ Yes | Groq API key for LLM access |
+| `NASA_API_KEY` |  Yes | NASA API key for satellite imagery |
+| `GROQ_API_KEY` |  Yes | Groq API key for LLM access |
 
 ### Knowledge Base
 
@@ -194,7 +130,7 @@ Long-Term Solutions: [Strategic planning]
 
 ---
 
-## 🚀 Usage
+##  Usage
 
 ### Running the Application
 
@@ -223,7 +159,7 @@ streamlit run Interface/main.py --server.headless true
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 ORBITAL_WITNESS/
@@ -253,7 +189,7 @@ ORBITAL_WITNESS/
 
 ---
 
-## 🔄 Workflow Diagram
+##  Workflow Diagram
 
 ### Complete Agent Pipeline
 
@@ -304,7 +240,7 @@ graph TD
 
 ---
 
-## 🔬 Components Deep Dive
+##  Components Deep Dive
 
 ### 1. NASA API Module (`nasa_api.py`)
 
@@ -397,7 +333,7 @@ Provide:
 
 ---
 
-## 💡 Example Use Cases
+##  Example Use Cases
 
 ### Use Case 1: Wildfire Detection
 
@@ -453,13 +389,13 @@ Long-Term Solutions:
 
 ---
 
-## 🎨 User Interface
+##  User Interface
 
 ### Main Dashboard
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  🛰️ GeoGuardian: Satellite Image Analyzer                  │
+│  Orbital Witness: Satellite Image Analyzer                  │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  ┌──────────────┐    ┌─────────────────────────────┐     │
@@ -480,66 +416,9 @@ Long-Term Solutions:
 │  └──────────────┘    └─────────────────────────────┘     │
 └────────────────────────────────────────────────────────────┘
 ```
-
 ---
 
-## 🔐 Security Considerations
-
-### API Key Management
-
-- ✅ Store API keys in `.env` file (never commit to repo)
-- ✅ `.env` is included in `.gitignore`
-- ✅ Use environment variables for all sensitive data
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. NASA API Returns 404**
-- **Cause**: No satellite imagery available for the selected date/location
-- **Solution**: Try different dates or locations with known coverage
-
-**2. Module Import Errors**
-- **Cause**: Missing dependencies
-- **Solution**: `pip install -r requirements.txt`
-
-**3. FAISS Installation Issues**
-- **Cause**: CPU/GPU compatibility
-- **Solution**: Use `faiss-cpu` for CPU-only systems
-
-**4. Groq API Errors**
-- **Cause**: Invalid or missing API key
-- **Solution**: Verify `GROQ_API_KEY` in `.env` file
-
----
-
-## 🚧 Roadmap
-
-### Planned Features
-
-- [ ] Real ML model integration (replace mock classifier)
-- [ ] Multi-temporal analysis (>2 images)
-- [ ] Export reports as PDF
-- [ ] Email notifications for critical events
-- [ ] Historical trend analysis
-- [ ] Multi-region batch processing
-- [ ] Mobile app interface
-- [ ] Real-time monitoring dashboard
-
----
-
-## 🙏 Acknowledgments
-
-- **NASA** for providing free satellite imagery API
-- **Groq** for fast LLM inference
-- **LangChain** for the excellent agent framework
-- **Streamlit** for the intuitive web framework
-- **HuggingFace** for embeddings models
----
-
-## 📊 Performance Metrics
+##  Performance Metrics
 
 ### System Performance
 
@@ -557,7 +436,7 @@ Long-Term Solutions:
 
 ---
 
-## 🌍 Real-World Applications
+##  Real-World Applications
 
 ### Government & Emergency Services
 - Rapid disaster response planning
