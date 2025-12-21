@@ -2,74 +2,50 @@ import os
 import requests
 import numpy as np
 import cv2
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-# Load environment variables from your .env file
 load_dotenv()
-
-# Fetch the API key from the environment
 NASA_API_KEY = os.getenv("NASA_API_KEY")
-if not NASA_API_KEY:
-    # This error will stop the app if the key is missing, which is good.
-    raise ValueError("NASA_API_KEY not found. Please set it in your .env file.")
-
-# The base URL for the NASA Landsat 8 imagery API
 BASE_URL = "https://api.nasa.gov/planetary/earth/imagery"
+CACHE_DIR = "./imagery_cache"
 
-def fetch_imagery(location: tuple, date: str) -> np.ndarray:
-    """
-    Fetches a single Landsat 8 image from NASA's Earth API for a specific date.
+os.makedirs(CACHE_DIR, exist_ok=True)
 
-    Args:
-        location (tuple): The (latitude, longitude) of the area.
-        date (str): The date of the image in 'YYYY-MM-DD' format.
-
-    Returns:
-        The fetched image as a NumPy array (OpenCV format).
-    
-    Raises:
-        Exception: If the API call fails or no image is found.
-    """
+def fetch_imagery_smart(location: tuple, date: str, search_window_days=7) -> np.ndarray:
     lat, lon = location
-    print(f"Fetching imagery for {location} on {date}...")
+    target_date_obj = datetime.strptime(date, "%Y-%m-%d")
 
-    params = {
-        "lon": lon,
-        "lat": lat,
-        "date": date,
-        "dim": 0.15,  # Sets the width and height of the image in degrees (0.15 is a good default)
-        "api_key": NASA_API_KEY,
-    }
+    cache_path = f"{CACHE_DIR}/{lat}_{lon}_{date}.png"
+    if os.path.exists(cache_path):
+        print(f"Loading from cache: {cache_path}")
+        return cv2.imread(cache_path)
 
-    try:
-        # Make the API request
-        response = requests.get(BASE_URL, params=params)
-        
-        # This will raise an error if the request failed (e.g., 404, 500)
-        response.raise_for_status()
+    for i in range(search_window_days + 1):
+        for offset in (0, i, -i):
+            if i == 0 and offset != 0: continue
+            
+            check_date = (target_date_obj + timedelta(days=offset)).strftime("%Y-%m-%d")
+            print(f"Checking NASA API for {check_date}...")
 
-        # Check if the content type is an image, not an error message
-        if 'image' not in response.headers.get('Content-Type', ''):
-             raise Exception(f"API did not return an image. Response: {response.text}")
+            params = {
+                "lon": lon, "lat": lat, "date": check_date,
+                "dim": 0.15, "api_key": NASA_API_KEY,
+            }
 
-        # Convert the raw image content (bytes) into a NumPy array
-        image_array = np.frombuffer(response.content, np.uint8)
-        
-        # Decode the NumPy array into a full-color image (BGR format for OpenCV)
-        image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+            response = requests.get(BASE_URL, params=params)
+            
+            if response.status_code == 200 and 'image' in response.headers.get('Content-Type', ''):
+                image_array = np.frombuffer(response.content, np.uint8)
+                image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+                
+                avg_brightness = np.mean(image)
+                if avg_brightness > 220:
+                    print(f"Skipping {check_date}: Too cloudy/bright.")
+                    continue
 
-        if image is None:
-            raise Exception("Failed to decode image from API response.")
-
-        print(f"Successfully fetched image for {date}.")
-        return image
-
-    except requests.exceptions.HTTPError as http_err:
-        # Handle specific API errors, like no image for that date
-        if response.status_code == 404:
-            raise Exception(f"No satellite imagery found for the specified date and location: {date}. Try a different date.")
-        # Handle other HTTP errors
-        raise Exception(f"HTTP error occurred: {http_err} - {response.text}")
-    except Exception as e:
-        # Catch any other errors (network issues, etc.)
-        raise Exception(f"An error occurred while fetching imagery: {e}")
+                cv2.imwrite(f"{CACHE_DIR}/{lat}_{lon}_{check_date}.png", image)
+                print(f"Success! Found valid imagery on {check_date}")
+                return image
+            
+    raise Exception(f"No clear imagery found near {date} for location {location}")
