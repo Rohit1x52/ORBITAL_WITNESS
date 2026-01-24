@@ -1,9 +1,12 @@
 streamlit
-numpy
-opencv-python-headless
+numpy<2.0
+opencv-python-headless<4.12.0,>=4.8.0
 python-dotenv
 requests
 langchain
 langchain-groq
 langchain-community  
 faiss-cpu
+torchvision
+scikit-image
+plotly
