@@ -29,8 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 class SatelliteAgentConfig:
-    """Configuration class for Satellite Agent"""
-    
     def __init__(
         self,
         knowledge_base_path: str = "knowledge_base/disaster_solutions.txt",
@@ -59,8 +57,6 @@ class SatelliteAgentConfig:
 
 
 class RAGChainBuilder:
-    """Builder class for RAG chain with caching and error handling"""
-    
     def __init__(self, config: SatelliteAgentConfig):
         self.config = config
         self._vectorstore = None
@@ -173,8 +169,6 @@ class RAGChainBuilder:
 
 
 class ClassificationAgent:
-    """Classification agent with summary generation"""
-    
     def __init__(self, config: SatelliteAgentConfig):
         self.config = config
         self.summary_llm = ChatGroq(
@@ -202,7 +196,7 @@ class ClassificationAgent:
                 summary = (
                     summary_chain.invoke(result)
                     if not self.is_uncertain(result)
-                    else "⚠️ Model uncertainty detected — confidence below threshold. Human review recommended."
+                    else "Model uncertainty detected — confidence below threshold. Human review recommended."
                 )
                 
                 return {
@@ -226,8 +220,6 @@ class ClassificationAgent:
 
 
 class SatelliteAgent:
-    """Main Satellite Disaster Analysis Agent"""
-    
     def __init__(self, config: Optional[SatelliteAgentConfig] = None):
         self.config = config or SatelliteAgentConfig()
         
@@ -300,9 +292,9 @@ class SatelliteAgent:
             if label in ["No Significant Change", "Error"]:
                 logger.info("No significant change detected or error occurred")
                 data["solutions"] = (
-                    "✓ No significant change detected. No immediate action required."
+                    "No significant change detected. No immediate action required."
                     if label == "No Significant Change"
-                    else "⚠️ Unable to generate solutions due to classification error."
+                    else "Unable to generate solutions due to classification error."
                 )
             else:
                 logger.info(f"Generating solutions for: {label}")
