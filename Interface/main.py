@@ -1,8 +1,8 @@
 import streamlit as st
 import time
 from datetime import datetime, timedelta
-from app.agent import create_satellite_agent
 from Interface import visualizer
+from Interface.api_client import OrbitalWitnessAPIClient
 import plotly.graph_objects as go
 
 
@@ -358,16 +358,23 @@ def main():
     
     apply_custom_styles()
     
-    if 'agent_chain' not in st.session_state:
+    if 'api_client' not in st.session_state:
         with st.status("System Initialization...", expanded=True) as status:
-            st.write("Loading Satellite Agent...")
-            st.session_state.agent_chain = create_satellite_agent()
-            time.sleep(0.8)
-            st.write("Connecting to Knowledge Base...")
+            st.write("Connecting to API Server...")
+            st.session_state.api_client = OrbitalWitnessAPIClient()
             time.sleep(0.5)
-            st.write("Establishing Secure Connection...")
-            time.sleep(0.5)
-            status.update(label="Orbital Witness AI Ready", state="complete", expanded=False)
+            
+            if st.session_state.api_client.is_api_available():
+                st.write("API Connection Established...")
+                time.sleep(0.3)
+                st.write("System Ready...")
+                time.sleep(0.2)
+                status.update(label="Orbital Witness AI Ready", state="complete", expanded=False)
+            else:
+                status.update(label="API Server Unavailable", state="error", expanded=True)
+                st.error("Cannot connect to API server at http://localhost:8000")
+                st.info("Please ensure the API server is running: `python api_server.py`")
+                st.stop()
 
     with st.sidebar:
         st.markdown('<div style="text-align: center; margin-bottom: 1rem;">', unsafe_allow_html=True)
@@ -455,13 +462,26 @@ def main():
                     }
                     
                     st.write("Fetching imagery tiles...")
-                    time.sleep(0.4)
                     st.write("Running AI detection models...")
-                    time.sleep(0.3)
                     st.write("Processing neural network analysis...")
-                    time.sleep(0.3)
                     
-                    report = st.session_state.agent_chain.invoke(input_data)
+                    api_response = st.session_state.api_client.analyze(
+                        location=(lat, lon),
+                        before_date=str(before_date),
+                        after_date=str(after_date)
+                    )
+                    
+                    report = {
+                        "classification": api_response.get("classification", {}),
+                        "summary": api_response.get("summary", ""),
+                        "solutions": api_response.get("solutions", ""),
+                        "images": {},
+                        "input_params": {
+                            "location": (lat, lon),
+                            "before_date": str(before_date),
+                            "after_date": str(after_date)
+                        }
+                    }
                     
                     st.write("Generating intelligence report...")
                     time.sleep(0.2)
