@@ -45,6 +45,7 @@ class TaskResponse(BaseModel):
     task_id: str
     status: str
     message: str
+    graph_run_id: Optional[str] = None
     
 class ErrorResponse(BaseModel):
     detail: str
