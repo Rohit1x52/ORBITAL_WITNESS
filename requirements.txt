@@ -6,6 +6,7 @@ requests
 langchain
 langchain-groq
 langchain-community  
+langgraph>=0.2.0
 faiss-cpu
 torchvision
 scikit-image
