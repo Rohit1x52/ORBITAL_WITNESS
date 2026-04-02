@@ -40,7 +40,9 @@ class SatelliteAgentConfig:
         chunk_size: int = 500,
         chunk_overlap: int = 50,
         cache_dir: str = "./cache",
-        max_retries: int = 3
+        max_retries: int = 3,
+        workflow_mode: str = "linear",
+        checkpoint_backend: str = "memory"
     ):
         self.knowledge_base_path = knowledge_base_path
         self.embedding_model = embedding_model
@@ -52,6 +54,8 @@ class SatelliteAgentConfig:
         self.chunk_overlap = chunk_overlap
         self.cache_dir = cache_dir
         self.max_retries = max_retries
+        self.workflow_mode = workflow_mode
+        self.checkpoint_backend = checkpoint_backend
         
         Path(cache_dir).mkdir(parents=True, exist_ok=True)
 
