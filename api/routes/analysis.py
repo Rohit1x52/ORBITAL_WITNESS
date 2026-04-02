@@ -5,37 +5,23 @@ from datetime import datetime
 
 from ..models.requests import AnalysisRequest, ClassificationRequest
 from ..models.responses import AnalysisResponse, ClassificationResponse, TaskResponse
+from ..config import settings
+from ..graph_runtime import get_workflow_runner
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 tasks_db: Dict[str, Dict[str, Any]] = {}
-agent_instance = None
-_agent_lock = False
 
-def get_agent():
-    global agent_instance, _agent_lock
-    
-    if agent_instance is None:
-        if not _agent_lock:
-            _agent_lock = True
-            logger.info("Initializing agent on first request...")
-            from app.agent import create_satellite_agent
-            agent_instance = create_satellite_agent()
-            logger.info("Agent initialized successfully")
-        else:
-            raise HTTPException(status_code=503, detail="Agent is being initialized, please retry")
-    
-    return agent_instance
-
-def set_agent(agent):
-    global agent_instance
-    agent_instance = agent
+def _run_analysis(input_data: Dict[str, Any], task_id: str | None = None) -> Dict[str, Any]:
+    runner = get_workflow_runner()
+    if settings.WORKFLOW_MODE.lower() == "linear":
+        return runner.invoke(input_data)
+    return runner.invoke(input_data, thread_id=task_id)
 
 @router.post("/analyze", response_model=AnalysisResponse)
 async def analyze_satellite_data(request: AnalysisRequest):
     try:
-        agent = get_agent()
         logger.info(f"Received analysis request for location: {request.location}")
         
         input_data = {
@@ -44,7 +30,7 @@ async def analyze_satellite_data(request: AnalysisRequest):
             "after_date": request.after_date
         }
         
-        result = agent.invoke(input_data)
+        result = _run_analysis(input_data)
         
         return AnalysisResponse(
             status="success",
@@ -80,18 +66,19 @@ async def analyze_satellite_data_async(
     tasks_db[task_id] = {
         "status": "processing",
         "created_at": datetime.now().isoformat(),
-        "request": request.dict()
+        "request": request.dict(),
+        "workflow_mode": settings.WORKFLOW_MODE,
+        "graph_run_id": task_id if settings.WORKFLOW_MODE.lower() == "graph" else None,
     }
     
     async def process_analysis():
         try:
-            agent = get_agent()
             input_data = {
                 "location": request.location,
                 "before_date": request.before_date,
                 "after_date": request.after_date
             }
-            result = agent.invoke(input_data)
+            result = _run_analysis(input_data, task_id=task_id)
             tasks_db[task_id]["status"] = "completed"
             tasks_db[task_id]["result"] = result
         except Exception as e:
@@ -103,7 +90,8 @@ async def analyze_satellite_data_async(
     return TaskResponse(
         task_id=task_id,
         status="processing",
-        message="Analysis task submitted successfully"
+        message="Analysis task submitted successfully",
+        graph_run_id=task_id if settings.WORKFLOW_MODE.lower() == "graph" else None
     )
 
 @router.get("/analyze/task/{task_id}")
@@ -116,7 +104,6 @@ async def get_task_status(task_id: str):
 @router.post("/classify", response_model=ClassificationResponse)
 async def classify_image_change(request: ClassificationRequest):
     try:
-        agent = get_agent()
         logger.info(f"Received classification request for location: {request.location}")
         
         input_data = {
@@ -124,9 +111,7 @@ async def classify_image_change(request: ClassificationRequest):
             "before_date": request.before_date,
             "after_date": request.after_date
         }
-        
-        data = agent.fetch_satellite_data(input_data)
-        result = agent.run_classification(data)
+        result = _run_analysis(input_data)
         
         return ClassificationResponse(
             status="success",
