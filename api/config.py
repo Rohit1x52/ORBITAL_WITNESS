@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Orbital Witness API"
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
+    WORKFLOW_MODE: str = os.getenv("WORKFLOW_MODE", "graph")
+    CHECKPOINT_BACKEND: str = os.getenv("WORKFLOW_CHECKPOINT_BACKEND", "memory")
     
     HOST: str = "0.0.0.0"
     PORT: int = 8000
