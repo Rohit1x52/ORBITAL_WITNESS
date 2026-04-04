@@ -4,6 +4,7 @@ opencv-python-headless
 python-dotenv
 requests
 langchain
+langsmith>=0.1.0
 langchain-groq
 langchain-community  
 langgraph>=0.2.0
