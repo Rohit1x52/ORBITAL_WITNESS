@@ -24,6 +24,12 @@ class Settings(BaseSettings):
     
     NASA_API_KEY: str = os.getenv("NASA_API_KEY", "DEMO_KEY")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+
+    LANGSMITH_TRACING_ENABLED: bool = os.getenv("LANGSMITH_TRACING_ENABLED", "false").lower() == "true"
+    LANGSMITH_API_KEY: str = os.getenv("LANGCHAIN_API_KEY", "")
+    LANGSMITH_PROJECT: str = os.getenv("LANGCHAIN_PROJECT", "orbital-witness")
+    LANGSMITH_ENDPOINT: str = os.getenv("LANGCHAIN_ENDPOINT", "https://api.smith.langchain.com")
+    ENABLE_GRAPH_METRICS: bool = os.getenv("ENABLE_GRAPH_METRICS", "true").lower() == "true"
     
     MAX_WORKERS: int = 4
     REQUEST_TIMEOUT: int = 300
