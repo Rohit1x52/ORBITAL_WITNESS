@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from .routes import analysis, health
 from .config import settings
+from app.observability import configure_langsmith
 
 logging.basicConfig(
     level=logging.INFO,
@@ -16,6 +17,8 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("FastAPI application started")
+    tracing_enabled = configure_langsmith(settings)
+    logger.info("LangSmith tracing active: %s", tracing_enabled)
     logger.info("Agent will be initialized on first request")
     yield
     logger.info("Shutting down application...")
@@ -54,5 +57,9 @@ async def root():
         "message": "Orbital Witness API",
         "version": "1.0.0",
         "docs": "/docs",
-        "health": "/api/v1/health"
+        "health": "/api/v1/health",
+        "observability": {
+            "langsmith_tracing_enabled": settings.LANGSMITH_TRACING_ENABLED,
+            "graph_metrics_enabled": settings.ENABLE_GRAPH_METRICS,
+        },
     }
