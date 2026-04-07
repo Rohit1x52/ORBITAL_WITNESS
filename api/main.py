@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from .routes import analysis, health
 from .config import settings
 from app.observability import configure_langsmith
+from .db import init_db
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,6 +20,11 @@ async def lifespan(app: FastAPI):
     logger.info("FastAPI application started")
     tracing_enabled = configure_langsmith(settings)
     logger.info("LangSmith tracing active: %s", tracing_enabled)
+    if settings.DATABASE_ENABLED:
+        try:
+            init_db()
+        except Exception as exc:
+            logger.warning("Database initialization failed, continuing without DB persistence: %s", exc)
     logger.info("Agent will be initialized on first request")
     yield
     logger.info("Shutting down application...")
@@ -61,5 +67,8 @@ async def root():
         "observability": {
             "langsmith_tracing_enabled": settings.LANGSMITH_TRACING_ENABLED,
             "graph_metrics_enabled": settings.ENABLE_GRAPH_METRICS,
+        },
+        "database": {
+            "enabled": settings.DATABASE_ENABLED,
         },
     }
