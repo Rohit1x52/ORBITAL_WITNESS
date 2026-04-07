@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     LANGSMITH_PROJECT: str = os.getenv("LANGCHAIN_PROJECT", "orbital-witness")
     LANGSMITH_ENDPOINT: str = os.getenv("LANGCHAIN_ENDPOINT", "https://api.smith.langchain.com")
     ENABLE_GRAPH_METRICS: bool = os.getenv("ENABLE_GRAPH_METRICS", "true").lower() == "true"
+
+    DATABASE_ENABLED: bool = os.getenv("DATABASE_ENABLED", "true").lower() == "true"
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL",
+        "postgresql+psycopg2://postgres:postgres@localhost:5432/orbital_witness",
+    )
     
     MAX_WORKERS: int = 4
     REQUEST_TIMEOUT: int = 300
